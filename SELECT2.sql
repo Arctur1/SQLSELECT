@@ -24,7 +24,6 @@ group by a.name;
 SELECT a.name FROM artist a
 JOIN albumartist as aa ON a.id = artist_id
 JOIN album ON album.id = aa.album_id WHERE album.year <> 2020
-group by a.name;
 
 5.
 
@@ -61,7 +60,15 @@ WHERE lengthseconds = (SELECT min(lengthseconds) FROM song);
 
 9.
 
-SELECT a.name FROM album a
+SELECT a.name, COUNT(song.album_id) as songcount 
+FROM album a
 JOIN song ON song.album_id = a.id
-WHERE a.id = (SELECT COUNT(id) FROM album);
+group by a.name
+HAVING COUNT(song.album_id) =
+(SELECT DISTINCT COUNT(song.album_id) as songcount 
+FROM album a
+JOIN song ON song.album_id = a.id
+group by a.name
+order by songcount asc
+LIMIT 1)
 
